@@ -1,0 +1,50 @@
+apply plugin: 'org.sonarqube'
+ext {
+    SONAR_HOST = "http://127.0.0.1:9000"
+}
+def androidJarPath;
+afterEvaluate {
+    def rootDir = project.rootDir
+    def localProperties = new File(rootDir, "local.properties")
+    if (localProperties.exists()) {
+        Properties properties = new Properties()
+        localProperties.withInputStream { instr ->
+            properties.load(instr)
+        }
+        def sdkDir = properties.getProperty('sdk.dir')
+        androidJarPath = sdkDir + "/platforms/" + "android-"+propCompileSdkVersion + "/android.jar"
+    }
+}
+
+sonarqube {
+    properties {
+
+        property "sonar.projectName",project.name
+        property "sonar.projectKey", project.name
+
+        property "sonar.sourceEncoding","UTF-8"
+        property "sonar.sources","."
+        property "sonar.exclusions","build/**,**/*.png,**/test/**,**/*.xml"
+        property "sonar.test.inclusions","**/test/**"
+        property "sonar.java.libraries",androidJarPath
+        property "sonar.import_unknown_files", false
+
+        property "sonar.language", "java"
+        property "sonar.sources", "src/main/java"
+
+        property "sonar.android.lint.report", "./build/outputs/lint-results.xml"
+        property "sonar.java.binaries", "build/intermediates/classes/debug"
+        /**
+         * Get list of report files
+         *  *ec(android ui test),
+         *  *exec (unit test)
+         */
+        FileTree tree = fileTree(dir: 'build')
+        tree.include '**/*.ec'
+        tree.include '**/*.exec'
+
+        //add files which for coverage report
+        property "sonar.jacoco.reportPaths",tree.files
+        property "sonar.host.url", SONAR_HOST
+    }
+}

@@ -1,0 +1,14 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+subprojects {
+    ext {
+        propCompileSdkVersion = 25
+        propBuildToolsVersion = "25.0.1"
+        propMinSdkVersion = 21
+        propTargetSdkVersion = 24
+        propVersionCode = 310
+        propVersionName  = "3.1.0"
+        propMultiDexEnabled  = true
+        propBuildNumber = 12
+    }
+}
